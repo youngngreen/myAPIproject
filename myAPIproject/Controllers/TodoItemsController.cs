@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using myAPIproject.Data;
 using TodoApi.Models;
 
 namespace myAPIproject.Controllers
@@ -24,9 +25,10 @@ namespace myAPIproject.Controllers
                 .ToListAsync();
         }
 
+
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItemDTO>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItemDTO>> GetTodoItem(int id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
             if (todoItem == null)
@@ -39,9 +41,9 @@ namespace myAPIproject.Controllers
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItemDTO todoDTO)
+        public async Task<IActionResult> PutTodoItem(int id, TodoItemDTO todoDTO)
         {
-            if (id != todoDTO.Id)
+            if (id != todoDTO.id)
             {
                 return BadRequest();
             }
@@ -52,8 +54,7 @@ namespace myAPIproject.Controllers
                 return NotFound();
             }
 
-            todoItem.Name = todoDTO.Name;
-            todoItem.IsComplete = todoDTO.IsComplete;
+            todoItem.name = todoDTO.name;
 
             try
             {
@@ -69,27 +70,49 @@ namespace myAPIproject.Controllers
 
         // POST: api/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO)
-        {
-            var todoItem = new TodoItem
-            {
-                IsComplete = todoDTO.IsComplete,
-                Name = todoDTO.Name
-            };
+        //[HttpPost]
+        //public async Task<ActionResult<TodoItemDTO>> PostTodoItem(TodoItemDTO todoDTO)
+        //{
+        //    var todoItem = new TodoItem
+        //    {
+        //        name = todoDTO.name
+        //    };
 
+        //    _context.TodoItems.Add(todoItem);
+        //    await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction(
+        //        nameof(GetTodoItem),
+        //        new { id = todoItem.id },
+        //        ItemToDTO(todoItem));
+
+        //}
+
+        [HttpPost]
+        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        {
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(
                 nameof(GetTodoItem),
-                new { id = todoItem.Id },
+                new { id = todoItem.id },
                 ItemToDTO(todoItem));
+
         }
+
+        //[HttpPost]
+        //public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        //{
+        //    _context.TodoItems.Add(todoItem);
+        //    await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction("GetTodoItem", new { id = todoItem.id }, todoItem);
+        //}
 
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodoItem(long id)
+        public async Task<IActionResult> DeleteTodoItem(int id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
             if(todoItem == null)
@@ -105,15 +128,14 @@ namespace myAPIproject.Controllers
 
         private bool TodoItemExists(long id)
         {
-            return _context.TodoItems.Any(e => e.Id == id);
+            return _context.TodoItems.Any(e => e.id == id);
         }
 
         private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
             new TodoItemDTO
             {
-                Id = todoItem.Id,
-                Name = todoItem.Name,
-                IsComplete = todoItem.IsComplete
+                id = todoItem.id,
+                name = todoItem.name
             };
     }
 }
