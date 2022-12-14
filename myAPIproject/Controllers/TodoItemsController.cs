@@ -1,7 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using myAPIproject.Data;
+using NuGet.Protocol;
 using TodoApi.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace myAPIproject.Controllers
 {
@@ -20,6 +26,56 @@ namespace myAPIproject.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
+
+
+            var ItemLists = new {
+
+                TConnectID = new {
+                    Type = "string",
+                    digits = 20,
+                    M_O = "M"
+                 },
+
+                Name = new
+                {
+                    Type = "string",
+                    digits = 20,
+                    M_O = "M"
+                },
+
+                Age = new
+                {
+                    Type = "Number",
+                    digits = 2,
+                    M_O = "M"
+                },
+
+                Gender = new
+                {
+                    Type = "string",
+                    digits = 20,
+                    M_O = "M"
+                },
+
+            };
+
+            Console.WriteLine(ItemLists);
+
+
+
+
+            //IDictionary<string, string, int, string> dataMap = new();
+            //dataMap.Add("TConnectID", "string", 20, "M");
+            //dataMap.Add("Name", "string", 20, "M");
+            //dataMap.Add("Age", "Number", 2, "M");
+            //dataMap.Add("Gender", "string", 20, "M");
+
+            //foreach(var _data in dataMap)
+            //{
+            //    Console.WriteLine(_data);
+            //}
+
+
             return await _context.TodoItems
                 .Select(x => ItemToDTO(x))
                 .ToListAsync();
@@ -89,17 +145,47 @@ namespace myAPIproject.Controllers
         //}
 
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public HttpResponseMessage PostTodoItem(TodoItem todoItem)
         {
-            _context.TodoItems.Add(todoItem);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction(
-                nameof(GetTodoItem),
-                new { id = todoItem.id },
-                ItemToDTO(todoItem));
+            //[
+            //  {
+            //    "TConnectID": "0001",
+            //    "Name": "Panyathep Sethsathira",
+            //    "Age": 44,
+            //    "Gender": "M"
+            //  },
+            //  {
+            //    "TConnectID": "0002",
+            //    "Name": "Name1 LastName1",
+            //    "Age": 44,
+            //    "Gender": "F"
+            //  }
+            //]
 
-        }
+            if (ModelState.IsValid)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
+
+            }
+            else
+            {
+                //return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                Console.WriteLine("invalid input");
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+
+        //public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        //{
+                //_context.TodoItems.Add(todoItem);
+                //await _context.SaveChangesAsync();
+
+                //return CreatedAtAction(
+                //    nameof(GetTodoItem),
+                //    new { id = todoItem.id },
+                //    ItemToDTO(todoItem));
+
+            }
 
         //[HttpPost]
         //public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
@@ -138,4 +224,5 @@ namespace myAPIproject.Controllers
                 name = todoItem.name
             };
     }
+
 }

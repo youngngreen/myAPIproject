@@ -24,6 +24,7 @@ namespace myAPIproject.Data
             {
                 entity.Property(e => e.id).HasColumnName("id");
                 entity.Property(e => e.name).HasColumnName("name");
+                entity.Property(e => e.age).HasColumnName("age");
             });
 
             OnModelCreatingPartial(modelBuilder);
